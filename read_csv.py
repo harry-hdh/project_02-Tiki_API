@@ -9,4 +9,12 @@ def read_product_id_csv():
         next(csv_reader)
         for row in csv_reader:
             ids.append(row[target_col])
-    return ids
+    return ids[:9999]
+
+def read_error_ids(path):
+    ids = []
+    with open(path, "r") as file:
+        content = file.read()
+        err_list = content.split("\n")
+        for i in err_list:
+            ids.append(i.split(" ")[-1])

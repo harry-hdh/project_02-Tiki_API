@@ -3,7 +3,7 @@ import requests
 import re
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-from writer import *
+from scr.write_files import *
 
 session = requests.Session()
 retries = Retry(total=3, backoff_factor=0.1, status_forcelist=[502, 503, 504])
@@ -11,7 +11,6 @@ session.mount('https://', HTTPAdapter(max_retries=retries))
 
 def extract_api_response(url, batch_num, file_type=''):
     # response = requests.get(url, headers='')
-    global response
     pid = url.split("/")[-1]
 
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -50,3 +49,26 @@ def run_parallel(url_list_batch, file_type='', max_workers=20): #Increase max_wo
                 future.result()  # just to catch exceptions
             except Exception as e:
                 print(f"Task failed: {e}")
+
+def chunked(lst, size):
+    for i in range(0,len(lst), size):
+        yield lst[i:i + size]
+
+# API endpoints to list
+def get_prod_url(pids):
+    products_url = []
+    for p in pids:
+        url = f'https://api.tiki.vn/product-detail/api/v1/products/{p}'
+        products_url.append(url)
+        # url_pid = (url,p)
+    return products_url
+
+#Validation
+def check_duplicate_field(data, field_name):
+    seen = set()
+    for item in data:
+        val = item.get(field_name)
+        if val in seen:
+            return True, val  # Duplicate found
+        seen.add(val)
+    return False, None

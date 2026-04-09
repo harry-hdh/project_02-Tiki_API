@@ -2,7 +2,7 @@ import csv
 import os
 import json
 def read_product_id_csv(path):
-    ids = []
+    ids = set()
 
     target_col = 0
     if os.path.exists(path):
@@ -10,21 +10,29 @@ def read_product_id_csv(path):
             csv_reader = csv.reader(csvfile)
             next(csv_reader)
             for row in csv_reader:
-                ids.append(row[target_col])
-    return ids[:9999]
+                ids.add(row[target_col])
+    else:
+        print(f"Error: File not found at {path}")
+        return ids
+    return list(ids)
 
 def read_error_ids(path):
-    ids = []
+    ids = set()
     if os.path.exists(path):
         with open(path, "r") as file:
             content = file.read()
             err_list = content.split("\n")
             for i in err_list:
-                ids.append(i.split(" ")[-1])
-    return ids
+                ids.add(i.split(" ")[-1])
+    else:
+        print(f"Error: File not found at {path}")
+        return ids
+    return list(ids)
 
 def load_checkpoint(path):
     if os.path.exists(path):
         with open(path, "r") as f:
             return json.load(f)["last_id"]
+    else:
+        print(f"Error: File not found at {path}")
     return None

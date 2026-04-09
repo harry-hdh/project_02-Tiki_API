@@ -6,17 +6,21 @@ from requests.adapters import HTTPAdapter
 from scr.write_files import *
 
 session = requests.Session()
-retries = Retry(total=3, backoff_factor=0.1, status_forcelist=[502, 503, 504])
+retries = Retry(total=3, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504], allowed_methods=["HEAD", "GET", "OPTIONS"])
 session.mount('https://', HTTPAdapter(max_retries=retries))
+#session.mount('http://', HTTPAdapter(max_retries=retries))
 
 def extract_api_response(url, batch_num, file_type=''):
     # response = requests.get(url, headers='')
+
     pid = url.split("/")[-1]
 
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    header = ''#{'User-Agent': 'Mozilla/5.0'}
+
+    #response = None
 
     try:
-        response = session.get(url, headers=headers, timeout=15)
+        response = session.get(url, headers=header, timeout=20)
         if response.status_code == 200:
             data = response.json()
 
@@ -28,11 +32,12 @@ def extract_api_response(url, batch_num, file_type=''):
                 "name": data.get("name"),
                 "price": data.get("price"),
                 "url_key": data.get("url_key"),
-                "description": re.sub(r"<.*?>|\n|\r", "", data.get("description")).strip(),
+                "description": re.sub(r"<.*?>|\n|\r", "", data.get("description") or "").strip(),
                 "image_urls": [img.get("base_url") for img in images_list if img.get("base_url")] if images_list else []
             }
 
-            response_writer(filtered, pid, batch_num, file_type)
+            # response_writer(filtered, pid, batch_num, file_type)
+            return filtered
         else:
             err_writer("", pid, response.status_code)
 
@@ -42,13 +47,17 @@ def extract_api_response(url, batch_num, file_type=''):
 
 def run_parallel(url_list_batch, file_type='', max_workers=20): #Increase max_workers for faster
     batch_num, batch = url_list_batch
+    results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(extract_api_response, item, batch_num, file_type) for item in batch]
         for future in as_completed(futures):
             try:
-                future.result()  # just to catch exceptions
+                result = future.result()  # just to catch exceptions
+                if result:
+                    results.append(result)
             except Exception as e:
                 print(f"Task failed: {e}")
+    return  results
 
 def chunked(lst, size):
     for i in range(0,len(lst), size):

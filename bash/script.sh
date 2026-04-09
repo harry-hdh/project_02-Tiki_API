@@ -16,7 +16,7 @@ python3 HaDucHuy_DE-K24_project02_main.py
 
 sudo apt update && sudo apt install supervisor -y
 sudo nano /etc/supervisor/conf.d/tiki_api_job.conf
-#Config like supervisord_notes.txt
+#Config like README
 #to start
 supervisord
 supervisorctl reread

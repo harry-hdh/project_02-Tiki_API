@@ -16,8 +16,10 @@ def main(pid_list):
         last_id = None
 
     start = False if last_id else True
-
-    for i, batch in enumerate(chunked(get_prod_url(pid_list), 1000), 1):
+    
+    product_urls = get_prod_url(pid_list)
+    
+    for i, batch in enumerate(chunked(product_urls, 1000), 1):
 
         if not start:
             match_index = next((idx for idx, url in enumerate(batch) if last_id in url), None)
@@ -57,7 +59,8 @@ def retry_pipeline():
         return
     #Clear old error log BEFORE retry
     file_path.unlink(missing_ok=True)
-    for i, batch in enumerate(chunked(get_prod_url(err_product_ids), 500), 1):
+    product_urls = get_prod_url(err_product_ids)
+    for i, batch in enumerate(chunked(product_urls, 500), 1):
         results = run_parallel((i, batch), 'RETRY')
 
         if results:

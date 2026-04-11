@@ -8,7 +8,7 @@ from scr.write_files import *
 session = requests.Session()
 retries = Retry(total=3, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
 session.mount('https://', HTTPAdapter(max_retries=retries))
-#session.mount('http://', HTTPAdapter(max_retries=retries))
+session.mount('http://', HTTPAdapter(max_retries=retries))
 
 def extract_api_response(url, batch_num, file_type=''):
     # response = requests.get(url, headers='')
@@ -45,7 +45,7 @@ def extract_api_response(url, batch_num, file_type=''):
         err_writer(e, pid, response.status_code, file_type)
         # print(f"Request failed with status code: {response.status_code}")
 
-def run_parallel(url_list_batch, file_type='', max_workers=20): #Increase max_workers for faster
+def run_parallel(url_list_batch, file_type='', max_workers=25): #Increase max_workers for faster
     batch_num, batch = url_list_batch
     results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:

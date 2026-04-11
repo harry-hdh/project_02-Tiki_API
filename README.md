@@ -1,6 +1,7 @@
 # project_02-Tiki_API
 Call Tiki api data from the given id list csv
 => Extract id, name, price, url_key, description and image_urls
+* After pull, need to create a "files" folder in project level to store extraction
 * Save extractions as json in batch of 1000 products per file
 * Using parallel to improve the speed and superviord to run and auto restart
 * Run the project in remote server (need to set up a server with ssh & ftp/sftp)

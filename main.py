@@ -1,3 +1,4 @@
+import os
 import time
 from src.read_files import read_product_id_csv, read_error_ids, load_checkpoint
 from pathlib import Path
@@ -70,6 +71,7 @@ def retry_pipeline():
             response_writer(results, f"retry_{i}")
 
 if __name__ == '__main__':
+    os.makedirs("files", exist_ok=True)
     main(product_ids)
     retry_pipeline()
 # for i, batch in enumerate(chunked(get_prod_url(product_ids), 1000), 1):

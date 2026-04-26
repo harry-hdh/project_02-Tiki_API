@@ -1,7 +1,7 @@
 import time
 from src.read_files import read_product_id_csv, read_error_ids, load_checkpoint
 from pathlib import Path
-from src.main_funcs import *
+from src.utils import *
 from src.write_files import save_checkpoint, response_writer
 
 # Read products
@@ -36,7 +36,8 @@ def main(pid_list):
         retries = 3
         for attempt in range(retries):
             try:
-                batch_results = run_parallel((i, batch))
+                batch_results = asyncio.run(run_parallel_async((i, batch)))
+                #(run_parallel((i, batch)))
                 response_writer(batch_results, i)
                 save_checkpoint(batch[-1])
                 break
@@ -61,7 +62,9 @@ def retry_pipeline():
     file_path.unlink(missing_ok=True)
     product_urls = get_prod_url(err_product_ids)
     for i, batch in enumerate(chunked(product_urls, 500), 1):
-        results = run_parallel((i, batch), 'RETRY')
+        results = asyncio.run(run_parallel_async((i, batch), 'RETRY'))
+        #run_parallel((i, batch), 'RETRY')
+
 
         if results:
             response_writer(results, f"retry_{i}")

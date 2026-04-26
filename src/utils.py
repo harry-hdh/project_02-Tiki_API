@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 import re
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-from scr.write_files import err_writer
+from src.write_files import err_writer
 
 MAX_CONCURRENT_REQUESTS = 25
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)

@@ -1,8 +1,8 @@
 import time
-from scr.read_files import read_product_id_csv, read_error_ids, load_checkpoint
+from src.read_files import read_product_id_csv, read_error_ids, load_checkpoint
 from pathlib import Path
-from scr.main_funcs import *
-from scr.write_files import save_checkpoint, response_writer
+from src.main_funcs import *
+from src.write_files import save_checkpoint, response_writer
 
 # Read products
 product_ids = read_product_id_csv('products-0-200000.csv')

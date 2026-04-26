@@ -3,7 +3,7 @@ import requests
 import re
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-from scr.write_files import *
+from src.write_files import *
 
 session = requests.Session()
 retries = Retry(total=3, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
